@@ -12,8 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Docker image
-        run: docker build -t backend:latest .
-
       - name: Run Docker container
-        run: docker compose up -d
+        run: docker compose down  
+
+      - name: Build Docker image
+        run: docker image remove backend:latest
