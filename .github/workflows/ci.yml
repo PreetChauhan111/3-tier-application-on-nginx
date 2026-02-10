@@ -1,0 +1,19 @@
+name: CICD
+
+on:
+  push:
+    branches: 
+      - main 
+
+jobs:
+  build:
+    runs-on: [ self-hosted, linux, x64 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t backend:latest .
+
+      - name: Run Docker container
+        run: docker compose up -d
