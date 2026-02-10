@@ -1,6 +1,6 @@
 services:
   backend:
-    build: backend:$GITHUB_SHA
+    image: backend:$GITHUB_SHA
     ports:
       - "5050:5050" 
     networks:
@@ -11,7 +11,7 @@ services:
       - mongodb
 
   frontend:
-    build: frontend:$GITHUB_SHA
+    image: frontend:$GITHUB_SHA
     ports:
       - "5173:5173"  
     networks:
