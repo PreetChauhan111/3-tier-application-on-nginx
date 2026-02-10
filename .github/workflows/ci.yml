@@ -14,10 +14,10 @@ jobs:
 
       - name: Build docker images
         run: |
-          docker build -t backend:$GITHUB_SHA /mern/backend
-          docker build -t backend:latest /mern/backend
-          docker build -t frontend:$GITHUB_SHA /mern/frontend
-          docker build -t frontend:latest /mern/frontend
+          docker build -t backend:$GITHUB_SHA ./mern/backend
+          docker build -t backend:latest ./mern/backend
+          docker build -t frontend:$GITHUB_SHA ./mern/frontend
+          docker build -t frontend:latest ./mern/frontend
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
