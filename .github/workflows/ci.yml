@@ -1,0 +1,51 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: [ self-hosted, linux, x64 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build docker images
+        run: |
+          docker build -t backend:$GITHUB_SHA /mern/backend
+          docker build -t backend:latest /mern/backend
+          docker build -t frontend:$GITHUB_SHA /mern/frontend
+          docker build -t frontend:latest /mern/frontend
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Images to docker hub
+        run: |
+          docker tag backend:$GITHUB_SHA ${{ secrets.DOCKER_USERNAME }}/backend:$GITHUB_SHA
+          docker tag backend:latest ${{ secrets.DOCKER_USERNAME }}/backend:latest
+          docker tag frontend:$GITHUB_SHA ${{ secrets.DOCKER_USERNAME }}/frontend:$GITHUB_SHA
+          docker tag frontend:latest ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/backend:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/frontend:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+
+  deploy:
+    runs-on: [ self-hosted, linux, x64 ]
+    needs: build
+    steps:
+      - name: Deploy to server
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/backend:$GITHUB_SHA
+          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:$GITHUB_SHA
+
+      - name: Run Container
+        run: |
+          docker compose down
+          docker compose up -d
